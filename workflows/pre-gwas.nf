@@ -1,5 +1,5 @@
 process UNZIP_PROCESS{
-    container "phinguyen2000/unzip:v6.0"
+    container "phinguyen2000/unzip:318d185"
 
     input:
     path missing_file
