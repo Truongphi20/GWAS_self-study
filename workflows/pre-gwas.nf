@@ -67,6 +67,23 @@ process CALCULATE_ALLELE_FREQUENCY_PLINK2{
     """
 }
 
+process CALCULATE_HARDY_WEINBERG_EQUILIBRIUM{
+    container "phinguyen2000/plink:v1.90b7.2"
+
+    input:
+    tuple val(prefix), path(genotypeFile)
+
+    output:
+    path("plink_results.hwe")
+
+    """
+    plink \
+    --bfile ${prefix} \
+    --hardy \
+    --out plink_results
+    """
+}
+
 
 
 workflow PRE_GWAS {
@@ -77,4 +94,5 @@ workflow PRE_GWAS {
     CALCULATE_MISSING_RATE(UNZIP_PROCESS.out)
     CALCULATE_ALLELE_FREQUENCY_PLINK(UNZIP_PROCESS.out)
     CALCULATE_ALLELE_FREQUENCY_PLINK2(UNZIP_PROCESS.out)
+    CALCULATE_HARDY_WEINBERG_EQUILIBRIUM(UNZIP_PROCESS.out)
 }
