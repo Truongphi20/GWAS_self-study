@@ -1,21 +1,6 @@
-process TEST{
-    container "phinguyen2000/multiqc:5da6a92"
-
-    publishDir 'data/',  mode: 'copy', overwrite: true
-    
-    input:
-    val string
-
-    output:
-    path "a.txt"
-
-    """
-    echo $string > a.txt
-    multiqc --help >> a.txt
-    """
-}
+include { PRE_GWAS }            from            "./workflows/pre-gwas.nf"
 
 
 workflow {
-    TEST(channel.of("phine"))
+    PRE_GWAS()
 }
