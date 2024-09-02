@@ -91,7 +91,7 @@ process LD_PRUNING{
     tuple val(prefix), path(genotypeFile)
 
     output:
-    tuple val("plink_results.prune"), path("plink_results.prune.{in,out}")
+    path("plink_results.prune.{in,out}")
 
     """
     plink \
@@ -106,6 +106,24 @@ process LD_PRUNING{
 
 }
 
+process INBREEDING_F_COEFFICIENT{
+    container "phinguyen2000/plink:v1.90b7.2"
+
+    input:
+    tuple val(prefix), path(genotypeFile), path(prune)
+
+    output:
+    path("plink_results.het")
+
+    """
+    plink \
+    --bfile ${genotypeFile} \
+    --extract ${prune.map{(it =~ /[^\s]+.in/)[0]}} \
+    --het \
+    --out plink_results
+    """
+}
+
 workflow PRE_GWAS {
     missing_file = channel.fromPath("$projectDir/GWASTutorial/01_Dataset/*.missing.zip")
 
@@ -116,4 +134,5 @@ workflow PRE_GWAS {
     CALCULATE_ALLELE_FREQUENCY_PLINK2(UNZIP_PROCESS.out)
     CALCULATE_HARDY_WEINBERG_EQUILIBRIUM(UNZIP_PROCESS.out)
     LD_PRUNING(UNZIP_PROCESS.out)
+    INBREEDING_F_COEFFICIENT(UNZIP_PROCESS.out.combine(LD_PRUNING.out.map{[it]}))
 }
