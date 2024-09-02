@@ -117,15 +117,16 @@ process INBREEDING_F_COEFFICIENT{
 
     """
     plink \
-    --bfile ${genotypeFile} \
-    --extract ${prune.map{(it =~ /[^\s]+.in/)[0]}} \
+    --bfile ${prefix} \
+    --extract ${prune[0]} \
     --het \
     --out plink_results
     """
 }
 
 workflow PRE_GWAS {
-    missing_file = channel.fromPath("$projectDir/GWASTutorial/01_Dataset/*.missing.zip")
+    input_file = "./GWASTutorial/01_Dataset/1KG.EAS.auto.snp.norm.nodup.split.rare002.common015.missing.zip"
+    missing_file = channel.fromPath("$input_file")
 
 
     UNZIP_PROCESS(missing_file)
