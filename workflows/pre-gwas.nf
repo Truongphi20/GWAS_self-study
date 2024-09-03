@@ -142,6 +142,24 @@ process ESTIMATE_IBD{
     """
 }
 
+process LD_CALCULATION {
+    container "phinguyen2000/plink:v1.90b7.2"
+
+    input:
+    tuple val(prefix), path(genotypeFile)
+
+    output:
+    path("plink_results.ld")
+
+    """
+    plink \
+        --bfile ${prefix} \
+        --chr 22 \
+        --r2 \
+        --out plink_results
+    """
+}
+
 workflow PRE_GWAS {
     input_file = "https://github.com/Cloufield/GWASTutorial/raw/main/01_Dataset/1KG.EAS.auto.snp.norm.nodup.split.rare002.common015.missing.zip"
     missing_file = channel.fromPath("$input_file")
@@ -155,4 +173,5 @@ workflow PRE_GWAS {
     LD_PRUNING(UNZIP_PROCESS.out)
     INBREEDING_F_COEFFICIENT(UNZIP_PROCESS.out.combine(LD_PRUNING.out.map{[it]}))
     ESTIMATE_IBD(UNZIP_PROCESS.out.combine(LD_PRUNING.out.map{[it]}))
+    LD_CALCULATION(UNZIP_PROCESS.out)
 }
