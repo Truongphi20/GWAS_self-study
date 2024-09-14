@@ -213,4 +213,7 @@ workflow PRE_GWAS {
     ESTIMATE_IBD(UNZIP_PROCESS.out.combine(LD_PRUNING.out.map{[it]}))
     LD_CALCULATION(UNZIP_PROCESS.out)
     APPLY_ALL_THE_FILTERS(UNZIP_PROCESS.out.combine(GET_HIGH_HET.out))
+
+    emit:
+    apply_all_filters = APPLY_ALL_THE_FILTERS.out
 }
