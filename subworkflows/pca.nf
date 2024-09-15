@@ -160,5 +160,6 @@ workflow PCA {
         PROJECT_SAMPLE.out.combine(meta_panel_file)
     )
 
-
+    emit:
+    sscore_file = PROJECT_SAMPLE.out
 }
