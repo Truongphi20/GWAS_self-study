@@ -56,6 +56,48 @@ process REMOVE_RELATED_SAMPLES{
     """
 }
 
+process PCA_PROCESSING{
+    container "phinguyen2000/plink2:v2.00a5.10LM"
+
+    input:
+    tuple val(prefix_clean_pre_gwas), path(clean_pre_gwas), path(prune_in), path(king_cutoff)
+
+    output:
+    path("pca.acount"), emit: acount_file
+    path("pca.eigenvec.allele"), emit: allele_file
+
+    """
+    plink2 \
+        --bfile ${prefix_clean_pre_gwas} \
+        --keep $king_cutoff \
+        --extract $prune_in \
+        --freq counts \
+        --threads ${task.cpus} \
+        --pca approx allele-wts 10 \
+        --out pca
+    """
+}
+
+process PROJECT_SAMPLE{
+    container "phinguyen2000/plink2:v2.00a5.10LM"
+
+    input:
+    tuple val(prefix_clean_pre_gwas), path(clean_pre_gwas), path(acount_file), path(allele_file)
+
+    output:
+    path("projected.sscore")
+
+    """
+    plink2 \
+        --bfile ${prefix_clean_pre_gwas} \
+        --threads ${task.cpus} \
+        --read-freq $acount_file \
+        --score $allele_file 2 6 header-read no-mean-imputation variance-standardize \
+        --score-col-nums 7-16 \
+        --out projected
+    """
+}
+
 
 workflow PCA {
     take:
@@ -74,6 +116,16 @@ workflow PCA {
 
     REMOVE_RELATED_SAMPLES(
         apply_all_filters.combine(LD_PRUNING.out)
+    )
+
+    PCA_PROCESSING(
+        apply_all_filters.combine(LD_PRUNING.out)
+                         .combine(REMOVE_RELATED_SAMPLES.out)
+    )
+
+    PROJECT_SAMPLE(
+        apply_all_filters.combine(PCA_PROCESSING.out.acount_file)
+                         .combine(PCA_PROCESSING.out.allele_file)
     )
 
 
