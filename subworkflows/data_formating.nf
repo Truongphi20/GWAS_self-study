@@ -197,7 +197,7 @@ process APPLY_ALL_THE_FILTERS {
     """
 }
 
-workflow PRE_GWAS {
+workflow DATA_FORMATING {
     input_file = "https://github.com/Cloufield/GWASTutorial/raw/main/01_Dataset/1KG.EAS.auto.snp.norm.nodup.split.rare002.common015.missing.zip"
     missing_file = channel.fromPath("$input_file")
 
