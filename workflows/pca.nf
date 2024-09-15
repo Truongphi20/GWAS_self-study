@@ -98,6 +98,33 @@ process PROJECT_SAMPLE{
     """
 }
 
+process PCA_PLOT{
+    container "phinguyen2000/seaborn:624a037"
+
+    input:
+    tuple path(sscore_file), path(meta_panel)
+
+    output:
+    path("pca_plot.png")
+
+    """
+    #!/usr/bin/env python
+
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+
+    pca = pd.read_table("$sscore_file",sep="\t")
+    ped = pd.read_table("$meta_panel",sep="\t")
+
+    pcaped=pd.merge(pca,ped,right_on="sample",left_on="IID",how="inner")
+    plt.figure(figsize=(10,10))
+    sns.scatterplot(data=pcaped,x="PC1_AVG",y="PC2_AVG",hue="pop",s=50)
+    plt.savefig("pca_plot.png", dpi=300)
+    """
+}
+
 
 workflow PCA {
     take:
@@ -105,6 +132,7 @@ workflow PCA {
 
     main:
     high_ld_file = channel.fromPath("https://raw.githubusercontent.com/Cloufield/GWASTutorial/main/05_PCA/high-ld-hg19.txt")
+    meta_panel_file = channel.fromPath("https://raw.githubusercontent.com/Cloufield/GWASTutorial/main/01_Dataset/integrated_call_samples_v3.20130502.ALL.panel")
     
     CREATE_HLA_REGION(
         high_ld_file.combine(apply_all_filters)
@@ -126,6 +154,10 @@ workflow PCA {
     PROJECT_SAMPLE(
         apply_all_filters.combine(PCA_PROCESSING.out.acount_file)
                          .combine(PCA_PROCESSING.out.allele_file)
+    )
+
+    PCA_PLOT(
+        PROJECT_SAMPLE.out.combine(meta_panel_file)
     )
 
 
