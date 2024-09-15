@@ -5,7 +5,7 @@ process ASSOCIATION_TEST {
     tuple val(prefix_clean_pre_gwas), path(clean_pre_gwas), path(phenotypeFile), path(sscore_file)
 
     output:
-    path("1kgeas.B1.glm.firth")
+    path("1kgeas.B1.glm.firth"), emit: firth_file
 
     """
     plink2 \
@@ -73,6 +73,9 @@ workflow GWAS {
                       .combine(sscore_file)
     )
 
-    VISUALIZE(ASSOCIATION_TEST.out)
+    VISUALIZE(ASSOCIATION_TEST.out.firth_file)
+
+    emit:
+    firth_file = ASSOCIATION_TEST.out.firth_file
 
 }
