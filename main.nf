@@ -10,7 +10,7 @@ workflow {
         PRE_GWAS.out.sscore_file
     )
     POST_GWAS(
-        PRE_GWAS.out.genotypeFile
+        PRE_GWAS.out.genotypeFile,
         GWAS.out.firth_file
     )
 }

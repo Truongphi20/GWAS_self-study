@@ -16,7 +16,7 @@ process MAKE_GRM {
 
 
 
-workflow {
+workflow SNP_HERITABILITY_ESTIMATION {
     take:
     genotypeFile
 
