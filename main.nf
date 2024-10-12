@@ -11,6 +11,7 @@ workflow {
     )
     POST_GWAS(
         PRE_GWAS.out.genotypeFile,
-        GWAS.out.firth_file
+        GWAS.out.firth_file,
+        PRE_GWAS.out.pheno_simulate
     )
 }

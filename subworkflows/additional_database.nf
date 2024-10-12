@@ -1,14 +1,13 @@
 process DOWNLOAD_DATABASE{
     container "phinguyen2000/annovar:39a4446"
     disk '50 GB'
-
-    storeDir "gs://phi-nextflow-bucket/store_files"
+    tag "$protocol"
 
     input:
     val(protocol)
 
     output:
-    path("hg19_${protocol}.txt")
+    path("hg19_*")
 
     """
     annotate_variation.pl -buildver hg19 -downdb -webfrom annovar $protocol .
@@ -19,7 +18,7 @@ process ANNOVAR_ANNOTATION{
     container "phinguyen2000/annovar:39a4446"
 
     input:
-    tuple path(annovar_input), path(database)
+    tuple path(annovar_input), path(databases)
 
     output:
     path("add_db*")
@@ -49,7 +48,10 @@ workflow ADDITIONAL_DATABASE{
     protocols_ch = channel.of("refGene", "avsnp150", "clinvar_20200316", "gnomad211_exome")
 
     DOWNLOAD_DATABASE(protocols_ch)
-    ANNOVAR_ANNOTATION(
-        annovar_input.combine(DOWNLOAD_DATABASE.out.collect(sort: true).map{[it]})
-    )
+
+    databases = DOWNLOAD_DATABASE.out.flatten().collect(sort: true).map{[it]}
+
+    // ANNOVAR_ANNOTATION(
+    //     annovar_input.combine(databases)
+    // )
 }

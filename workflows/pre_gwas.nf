@@ -7,6 +7,7 @@ workflow PRE_GWAS {
     PCA(DATA_FORMATING.out.apply_all_filters)
 
     emit:
+    pheno_simulate = DATA_FORMATING.out.pheno_simulate
     genotypeFile = DATA_FORMATING.out.genotypeFile
     apply_all_filters = DATA_FORMATING.out.apply_all_filters
     sscore_file = PCA.out.sscore_file

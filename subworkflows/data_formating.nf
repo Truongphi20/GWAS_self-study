@@ -14,6 +14,28 @@ process UNZIP_PROCESS{
     """
 }
 
+process PHENOTYPE_SIMULATION{
+    container "phinguyen2000/gcta:dab9a33"
+
+    input:
+    tuple val(prefix), path(genotypeFile), path(causal_snplist)
+
+    output:
+    tuple val("1kgeas_binary"), path("1kgeas_binary*")
+
+    """
+    gcta  \
+        --bfile "$prefix" \
+        --simu-cc 250 254  \
+        --simu-causal-loci $causal_snplist  \
+        --simu-hsq 0.8  \
+        --simu-k 0.5  \
+        --simu-rep 1  \
+        --out 1kgeas_binary
+    """
+
+}
+
 process CALCULATE_MISSING_RATE{
     container "phinguyen2000/plink:v1.90b7.2"
 
@@ -200,9 +222,11 @@ process APPLY_ALL_THE_FILTERS {
 workflow DATA_FORMATING {
     input_file = "https://github.com/Cloufield/GWASTutorial/raw/main/01_Dataset/1KG.EAS.auto.snp.norm.nodup.split.rare002.common015.missing.zip"
     missing_file = channel.fromPath("$input_file")
+    causal_snplist_file = channel.fromPath("https://raw.githubusercontent.com/Cloufield/GWASTutorial/refs/heads/main/01_Dataset/causal.snplist")
 
 
     UNZIP_PROCESS(missing_file)
+    PHENOTYPE_SIMULATION(UNZIP_PROCESS.out.combine(causal_snplist_file))
     CALCULATE_MISSING_RATE(UNZIP_PROCESS.out)
     CALCULATE_ALLELE_FREQUENCY_PLINK(UNZIP_PROCESS.out)
     CALCULATE_ALLELE_FREQUENCY_PLINK2(UNZIP_PROCESS.out)
@@ -216,5 +240,6 @@ workflow DATA_FORMATING {
 
     emit:
     genotypeFile = UNZIP_PROCESS.out
+    pheno_simulate = PHENOTYPE_SIMULATION.out
     apply_all_filters = APPLY_ALL_THE_FILTERS.out
 }
