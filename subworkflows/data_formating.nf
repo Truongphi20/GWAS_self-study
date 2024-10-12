@@ -215,5 +215,6 @@ workflow DATA_FORMATING {
     APPLY_ALL_THE_FILTERS(UNZIP_PROCESS.out.combine(GET_HIGH_HET.out))
 
     emit:
+    genotypeFile = UNZIP_PROCESS.out
     apply_all_filters = APPLY_ALL_THE_FILTERS.out
 }

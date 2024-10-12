@@ -9,5 +9,8 @@ workflow {
         PRE_GWAS.out.apply_all_filters,
         PRE_GWAS.out.sscore_file
     )
-    POST_GWAS(GWAS.out.firth_file)
+    POST_GWAS(
+        PRE_GWAS.out.genotypeFile
+        GWAS.out.firth_file
+    )
 }
