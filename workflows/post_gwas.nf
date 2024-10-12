@@ -1,3 +1,5 @@
+include {  ADDITIONAL_DATABASE  }           from            "../subworkflows/additional_database.nf"
+
 process FORMAT_INPUT_ANNOVAR{
     container "ubuntu:22.04"
 
@@ -43,6 +45,7 @@ workflow POST_GWAS {
    main:
    FORMAT_INPUT_ANNOVAR(firth_file)
    ANNOVAR_ANNOTATION(FORMAT_INPUT_ANNOVAR.out)
+   ADDITIONAL_DATABASE(FORMAT_INPUT_ANNOVAR.out)
 
 
 }
