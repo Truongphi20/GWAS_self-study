@@ -1,6 +1,6 @@
 process DOWNLOAD_DATABASE{
     container "phinguyen2000/annovar:39a4446"
-    machineType 'z3-highmem-88'
+    disk '50 GB'
 
     storeDir "gs://phi-nextflow-bucket/store_files"
 
