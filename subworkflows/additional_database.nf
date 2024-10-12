@@ -1,11 +1,14 @@
 process DOWNLOAD_DATABASE{
     container "phinguyen2000/annovar:39a4446"
+    machineType 'z3-highmem-88'
+
+    storeDir "gs://phi-nextflow-bucket/store_files"
 
     output:
     path("humandb/")
 
     """
-    annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp150 humandb/
+    annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp150 ./humandb/
     """
 }
 

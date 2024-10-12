@@ -4,6 +4,9 @@ process MAKE_GRM {
     input:
     tuple val(prefix), path(genotypeFile)
 
+    output:
+    tuple val("1kg_eas"), path("1kg_eas.grm.*")
+
     """
     gcta \
         --bfile ${prefix} \
