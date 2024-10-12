@@ -6,11 +6,13 @@ workflow POST_GWAS {
    genotypeFile
    firth_file
    pheno_simulate
+   sscore_file
 
    main:
    ANNOTATION(firth_file)
    SNP_HERITABILITY_ESTIMATION(
         genotypeFile, 
-        pheno_simulate
+        pheno_simulate,
+        sscore_file
     )
 }
