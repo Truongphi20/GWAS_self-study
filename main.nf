@@ -13,6 +13,8 @@ workflow {
         PRE_GWAS.out.genotypeFile,
         GWAS.out.firth_file,
         PRE_GWAS.out.pheno_simulate,
-        PRE_GWAS.out.sscore_file
+        PRE_GWAS.out.sscore_file,
+        PRE_GWAS.out.prunedSNP,
+        PRE_GWAS.out.apply_all_filters
     )
 }

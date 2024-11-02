@@ -11,4 +11,5 @@ workflow PRE_GWAS {
     genotypeFile = DATA_FORMATING.out.genotypeFile
     apply_all_filters = DATA_FORMATING.out.apply_all_filters
     sscore_file = PCA.out.sscore_file
+    prunedSNP = DATA_FORMATING.out.prunedSNP
 }

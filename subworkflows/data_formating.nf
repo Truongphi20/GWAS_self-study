@@ -242,4 +242,5 @@ workflow DATA_FORMATING {
     genotypeFile = UNZIP_PROCESS.out
     pheno_simulate = PHENOTYPE_SIMULATION.out
     apply_all_filters = APPLY_ALL_THE_FILTERS.out
+    prunedSNP = LD_PRUNING.out.map{[it]}
 }
