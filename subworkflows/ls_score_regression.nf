@@ -21,15 +21,23 @@ process DOWNLOAD_REFERENCE_FILES{
     tuple val(prefix), val(meta)
 
     output:
-    tuple val(prefix), val(meta), path("${prefix}${meta.suffix}")
+    tuple val(prefix), path("ref")
+
+    script:
+    if (meta.suffix == '.bz2'){
+        unzip_command = "bunzip2 -dk ${prefix}${meta.suffix} && mkdir ref && mv $prefix ref/$prefix"
+    } else {
+        unzip_command = "mkdir ref && $meta.unzip_command ${prefix}${meta.suffix} -C ref"
+    }
 
     """
     gsutil -u $params.googleProject cp $meta.link .
+    $unzip_command
     """
 }
 
 def ref_file_map = [
-        "eas_ldscores": [
+        "w_hm3.snplist": [
             "link": "gs://broad-alkesgroup-public-requester-pays/LDSCORE/w_hm3.snplist.bz2",
             "suffix": ".bz2",
             "unzip_command": "bzip2 -d"],
@@ -55,25 +63,6 @@ def ref_file_map = [
             "unzip_command": "tar -xzvf"]
     ]
 
-process UNZIP_REFERENCE_FILES{
-    tag "${prefix}${meta.suffix}"
-    container "phinguyen2000/unzip:318d185"
-
-    input:
-    tuple val(prefix), val(meta), path(ref_file)
-
-    output:
-    tuple val(prefix), path(prefix)
-
-    """
-    if [[ $meta.suffix == '.bz2' ]]; then
-        bunzip2 $ref_file
-    else
-        mkdir $prefix && $meta.unzip_command $ref_file -C $prefix
-    fi
-    """
-}
-
 process MUNGE_SUMSTATS{
     tag "$prefix"
     container "phinguyen2000/ldsc:85c9dbb"
@@ -90,7 +79,7 @@ process MUNGE_SUMSTATS{
     """
     munge_sumstats.py \
     --sumstats $sumstats \
-    --merge-alleles $snplist \
+    --merge-alleles $snplist/w_hm3.snplist\
     --a1 ALT \
     --a2 REF \
     --chunksize 500000 \
@@ -115,14 +104,10 @@ workflow LD_SCORE_REGRESSION {
         channel.of(*ref_file_map.collect { [it.key, it.value] } )
     )
 
-    UNZIP_REFERENCE_FILES(
-        DOWNLOAD_REFERENCE_FILES.out
-    )
-
     MUNGE_SUMSTATS(
         DOWNLOAD_SUMMARY_STATISTICS.out.combine(
             DOWNLOAD_REFERENCE_FILES.out.filter{ it[0] == 'w_hm3.snplist' }
-                                    .map{ it[2] }
+                                    .map{ it[1] }
         )
     )
 
