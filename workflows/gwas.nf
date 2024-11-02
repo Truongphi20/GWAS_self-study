@@ -73,7 +73,7 @@ workflow GWAS {
                       .combine(sscore_file)
     )
 
-    VISUALIZE(ASSOCIATION_TEST.out.firth_file)
+    // VISUALIZE(ASSOCIATION_TEST.out.firth_file)
 
     emit:
     firth_file = ASSOCIATION_TEST.out.firth_file
