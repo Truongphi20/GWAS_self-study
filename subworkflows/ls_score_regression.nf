@@ -124,7 +124,50 @@ process CROSS_LD_SCORE {
     """
 }
 
+process PARTITIONED_LD{
+    container "phinguyen2000/ldsc:85c9dbb"
 
+    input:
+    tuple path(bbj_hdlc_sumstats), 
+            path(baseline, name: 'basename/'), 
+            path(eas_plinkfiles, name: 'eas_plinkfiles/'), 
+            path(eas_weights, name: 'weight/')
+
+    output:
+    path("BBJ_HDLC_baseline.log")
+
+    """
+    ldsc.py \
+    --h2 $bbj_hdlc_sumstats \
+    --overlap-annot \
+    --ref-ld-chr $baseline/baseline. \
+    --frqfile-chr $eas_plinkfiles/1000G_Phase3_EAS_plinkfiles/1000G.EAS.QC. \
+    --w-ld-chr $eas_weights/1000G_Phase3_EAS_weights_hm3_no_MHC/weights.EAS.hm3_noMHC. \
+    --out BBJ_HDLC_baseline
+    """
+}
+
+process CELLTYPE_SPECIFICITY_LD{
+    container "phinguyen2000/ldsc:85c9dbb"
+
+    input:
+    tuple path(bbj_hdlc_sumstats), 
+            path(baseline, name: 'basename/'), 
+            path(cahoy_eas, name: 'cahoy_eas/'), 
+            path(eas_weights, name: 'weight/')
+
+    output:
+    path("BBJ_HDLC_baseline_cts.log")
+
+    """
+    ldsc.py \
+        --h2-cts $bbj_hdlc_sumstats \
+        --ref-ld-chr-cts $cahoy_eas/Cahoy_EAS_1000Gv3_ldscores/Cahoy.EAS.ldcts \
+        --ref-ld-chr $baseline/baseline. \
+        --w-ld-chr  $eas_weights/1000G_Phase3_EAS_weights_hm3_no_MHC/weights.EAS.hm3_noMHC. \
+        --out BBJ_HDLC_baseline_cts
+    """
+}
 
 workflow LD_SCORE_REGRESSION {
 
@@ -164,7 +207,33 @@ workflow LD_SCORE_REGRESSION {
                         )
     )
 
+    PARTITIONED_LD(
+        MUNGE_SUMSTATS.out.filter{ it[0] == 'BBJ_HDLC' }.map{ it[1] }
+                        .combine(
+                            DOWNLOAD_REFERENCE_FILES.out.filter{ it[0] == '1000G_Phase3_EAS_baseline_v1.2_ldscores' }
+                                                .map{ it[1] }
+                        ).combine(
+                            DOWNLOAD_REFERENCE_FILES.out.filter{ it[0] == '1000G_Phase3_EAS_plinkfiles' }
+                                                .map{ it[1] }
+                        ).combine(
+                            DOWNLOAD_REFERENCE_FILES.out.filter{ it[0] == '1000G_Phase3_EAS_weights_hm3_no_MHC' }
+                                                .map{ it[1] }
+                        )
+    )
 
+    CELLTYPE_SPECIFICITY_LD(
+        MUNGE_SUMSTATS.out.filter{ it[0] == 'BBJ_HDLC' }.map{ it[1] }
+                        .combine(
+                            DOWNLOAD_REFERENCE_FILES.out.filter{ it[0] == '1000G_Phase3_EAS_baseline_v1.2_ldscores' }
+                                                .map{ it[1] }
+                        ).combine(
+                            DOWNLOAD_REFERENCE_FILES.out.filter{ it[0] == 'Cahoy_EAS_1000Gv3_ldscores' }
+                                                .map{ it[1] }
+                        ).combine(
+                            DOWNLOAD_REFERENCE_FILES.out.filter{ it[0] == '1000G_Phase3_EAS_weights_hm3_no_MHC' }
+                                                .map{ it[1] }
+                        )
+    )
 }
 
 
