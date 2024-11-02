@@ -1,5 +1,6 @@
 include {  ANNOTATION  }                         from            "../subworkflows/annotation.nf"
 include {  SNP_HERITABILITY_ESTIMATION }         from            "../subworkflows/snp_heritability_estimation.nf"
+include {  LD_SCORE_REGRESSION         }         from            "../subworkflows/ls_score_regression.nf"
 
 workflow POST_GWAS {
    take:
@@ -19,4 +20,5 @@ workflow POST_GWAS {
         prunedSNP,
         apply_all_filters
     )
+    LD_SCORE_REGRESSION()
 }
