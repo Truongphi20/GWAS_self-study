@@ -87,6 +87,25 @@ process MUNGE_SUMSTATS{
     """
 }
 
+process LD_SCORE {
+    tag "$prefix"
+    container "phinguyen2000/ldsc:85c9dbb"
+
+    input:
+    tuple val(prefix), path(filtered_sumstats), path(eas_ldscores)
+
+    output:
+    tuple val(prefix), path("${prefix}.log")
+
+    """
+    ldsc.py \
+    --h2 $filtered_sumstats \
+    --ref-ld-chr $eas_ldscores/eas_ldscores/ \
+    --w-ld-chr $eas_ldscores/eas_ldscores/ \
+    --out $prefix
+    """
+}
+
 
 
 workflow LD_SCORE_REGRESSION {
@@ -107,6 +126,13 @@ workflow LD_SCORE_REGRESSION {
     MUNGE_SUMSTATS(
         DOWNLOAD_SUMMARY_STATISTICS.out.combine(
             DOWNLOAD_REFERENCE_FILES.out.filter{ it[0] == 'w_hm3.snplist' }
+                                    .map{ it[1] }
+        )
+    )
+
+    LD_SCORE(
+        MUNGE_SUMSTATS.out.combine(
+            DOWNLOAD_REFERENCE_FILES.out.filter{ it[0] == 'eas_ldscores' }
                                     .map{ it[1] }
         )
     )
