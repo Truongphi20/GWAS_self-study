@@ -106,6 +106,24 @@ process LD_SCORE {
     """
 }
 
+process CROSS_LD_SCORE {
+    container "phinguyen2000/ldsc:85c9dbb"
+
+    input:
+    tuple path(filtered_sumstats), path(eas_ldscores)
+
+    output:
+    path("BBJ_HDLC_LDLC.log")
+
+    """
+    ldsc.py \
+    --rg ${filtered_sumstats.join(",")} \
+    --ref-ld-chr $eas_ldscores/eas_ldscores/ \
+    --w-ld-chr $eas_ldscores/eas_ldscores/ \
+    --out BBJ_HDLC_LDLC
+    """
+}
+
 
 
 workflow LD_SCORE_REGRESSION {
@@ -135,6 +153,15 @@ workflow LD_SCORE_REGRESSION {
             DOWNLOAD_REFERENCE_FILES.out.filter{ it[0] == 'eas_ldscores' }
                                     .map{ it[1] }
         )
+    )
+
+    CROSS_LD_SCORE(
+        MUNGE_SUMSTATS.out.map{it[1]}
+                      .flatten().collect().map{[it]}
+                      .combine(
+                        DOWNLOAD_REFERENCE_FILES.out.filter{ it[0] == 'eas_ldscores' }
+                                                .map{ it[1] }
+                        )
     )
 
 
