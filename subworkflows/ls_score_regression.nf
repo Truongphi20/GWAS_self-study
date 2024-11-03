@@ -236,6 +236,9 @@ workflow LD_SCORE_REGRESSION {
                                                 .map{ it[1] }
                         )
     )
+
+    emit:
+    bbj_hdlc_sumstats = DOWNLOAD_SUMMARY_STATISTICS.out.filter{ it.getName() == 'BBJ_HDLC.txt.gz' }
 }
 
 
