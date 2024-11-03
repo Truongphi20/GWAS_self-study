@@ -157,12 +157,14 @@ process CELLTYPE_SPECIFICITY_LD{
             path(eas_weights, name: 'weight/')
 
     output:
-    path("BBJ_HDLC_baseline_cts.log")
+    path("BBJ_HDLC_baseline_cts.cell_type_results.txt")
 
     """
+    cp $cahoy_eas/Cahoy_EAS_1000Gv3_ldscores/Cahoy.EAS.ldcts .
+    sed -i 's|Cahoy_EAS_1000Gv3_ldscores|$cahoy_eas/Cahoy_EAS_1000Gv3_ldscores|g' Cahoy.EAS.ldcts
     ldsc.py \
         --h2-cts $bbj_hdlc_sumstats \
-        --ref-ld-chr-cts $cahoy_eas/Cahoy_EAS_1000Gv3_ldscores/Cahoy.EAS.ldcts \
+        --ref-ld-chr-cts Cahoy.EAS.ldcts \
         --ref-ld-chr $baseline/baseline. \
         --w-ld-chr  $eas_weights/1000G_Phase3_EAS_weights_hm3_no_MHC/weights.EAS.hm3_noMHC. \
         --out BBJ_HDLC_baseline_cts
