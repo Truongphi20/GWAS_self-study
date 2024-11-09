@@ -2,6 +2,7 @@ include {  ANNOTATION  }                         from            "../subworkflow
 include {  SNP_HERITABILITY_ESTIMATION }         from            "../subworkflows/snp_heritability_estimation.nf"
 include {  LD_SCORE_REGRESSION         }         from            "../subworkflows/ls_score_regression.nf"
 include {  GENE_SET_ANALYSIS           }         from            "../subworkflows/gene_set_analysis.nf"
+include {  FINE_MAPPING                }         from            "../subworkflows/fine_mapping.nf"
 
 workflow POST_GWAS {
    take:
@@ -24,5 +25,9 @@ workflow POST_GWAS {
     LD_SCORE_REGRESSION()
     GENE_SET_ANALYSIS(
         LD_SCORE_REGRESSION.out.bbj_hdlc_sumstats
+    )
+
+    FINE_MAPPING(
+        firth_file
     )
 }
