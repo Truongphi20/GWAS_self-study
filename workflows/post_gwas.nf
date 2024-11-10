@@ -28,6 +28,7 @@ workflow POST_GWAS {
     )
 
     FINE_MAPPING(
-        firth_file
+        firth_file,
+        genotypeFile
     )
 }

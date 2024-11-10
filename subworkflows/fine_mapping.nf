@@ -46,14 +46,47 @@ process DOWNLOAD_HUMAN_G1K_V37{
     """
 }
 
+process LD_MATRIX_CALCULATION{
+    container "phinguyen2000/plink:v1.90b7.2"
+
+    input:
+    tuple val(prefix), path(genotypeFile), path(sig_locus)
+
+    output:
+    path("sig_locus_mt.ld"), emit: sig_locus_mt
+    path("sig_locus_mt_r2.ld"), emit: sig_locus_mt_r2
+
+    """
+    # LD r matrix
+    plink \
+    --bfile ${prefix} \
+    --keep-allele-order \
+    --r square \
+    --extract $sig_locus \
+    --out sig_locus_mt
+
+    # LD r2 matrix
+    plink \
+    --bfile ${prefix} \
+    --keep-allele-order \
+    --r2 square \
+    --extract $sig_locus \
+    --out sig_locus_mt_r2
+    """
+}
+
 
 workflow FINE_MAPPING{
     take:
     firth_file
+    genotypeFile
 
     main:
     DOWNLOAD_HUMAN_G1K_V37()
     FILE_PREPARATION(
         firth_file.combine(DOWNLOAD_HUMAN_G1K_V37.out.map{[it]})
+    )
+    LD_MATRIX_CALCULATION(
+        genotypeFile.combine(FILE_PREPARATION.out)
     )
 }
