@@ -52,6 +52,6 @@ workflow FINE_MAPPING{
     main:
     DOWNLOAD_HUMAN_G1K_V37()
     FILE_PREPARATION(
-        firth_file.combine(DOWNLOAD_HUMAN_G1K_V37.out)
+        firth_file.combine(DOWNLOAD_HUMAN_G1K_V37.out.map{[it]})
     )
 }
