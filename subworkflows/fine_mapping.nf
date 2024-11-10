@@ -11,7 +11,7 @@ process FILE_PREPARATION{
 
 
     """
-    #/usr/bin/env python
+    #!/usr/bin/env python
 
     import gwaslab as gl
     import pandas as pd
