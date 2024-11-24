@@ -1,4 +1,5 @@
 include {  BASICS  }                from            "../modules/basics.nf"
+include {  SUSIER  }                from            "../modules/susier.nf"
 
 process DOWNLOAD_HUMAN_G1K_V37{
     container "phinguyen2000/wget:1.21.4"
