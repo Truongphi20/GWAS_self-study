@@ -28,4 +28,11 @@ workflow FINE_MAPPING{
         genotypeFile,
         DOWNLOAD_HUMAN_G1K_V37.out
     )
+
+    susier_notebook = channel.fromPath("$projectDir/asset/finemapping_susie.ipynb")
+    SUSIER(
+        firth_file.combine(susier_notebook)
+                  .combine(DOWNLOAD_HUMAN_G1K_V37.out)
+                  .combine(genotypeFile)
+    )
 }
