@@ -1,8 +1,7 @@
 process SUSIER  {
-    container "phinguyen2000/susier:f40a095"
+    container "phinguyen2000/susier:f92815b"
 
-    memory '10.GB'
-    cpus 5
+    memory '4.GB'
     
     input:
     tuple path(sumstats), path(susie_notebook), path(human_ref), path(human_ref_fai), val(prefix), path(bfile) 
