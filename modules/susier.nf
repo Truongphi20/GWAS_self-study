@@ -1,5 +1,5 @@
 process SUSIER  {
-    container "phinguyen2000/susier:f92815b"
+    container "phinguyen2000/susier:2869d29"
 
     memory '4.GB'
     
