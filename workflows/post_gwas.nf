@@ -3,6 +3,7 @@ include {  SNP_HERITABILITY_ESTIMATION }         from            "../subworkflow
 include {  LD_SCORE_REGRESSION         }         from            "../subworkflows/ls_score_regression.nf"
 include {  GENE_SET_ANALYSIS           }         from            "../subworkflows/gene_set_analysis.nf"
 include {  FINE_MAPPING                }         from            "../subworkflows/fine_mapping.nf"
+include {  META_ANALYSIS              }         from            "../subworkflows/meta_analysis.nf"
 
 workflow POST_GWAS {
    take:
@@ -31,4 +32,6 @@ workflow POST_GWAS {
         firth_file,
         genotypeFile
     )
+
+    META_ANALYSIS()
 }
